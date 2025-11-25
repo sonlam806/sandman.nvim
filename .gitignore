@@ -1,0 +1,22 @@
+# Neovim cache files
+*.cache
+
+# Test files
+test_*.md
+example_*.md
+
+# Lua compiled files
+*.luac
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Personal notebooks (users' work)
+notebooks/
