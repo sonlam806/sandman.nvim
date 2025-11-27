@@ -451,11 +451,6 @@ A test notebook is included in `test_notebook.md` that covers basic functionalit
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
-
-MIT License - see LICENSE file for details
-
 ## Acknowledgments
 
-- Original [Sandman](https://github.com/paullam/sandman) by Paul Lam
 - Inspired by executable notebook tools like Jupyter and Observable

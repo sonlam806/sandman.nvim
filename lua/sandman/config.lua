@@ -17,6 +17,16 @@ M.defaults = {
   -- Show virtual text for request counts
   show_virtual_text = true,
   
+  -- Auto-open output pane after block execution
+  auto_open_output = true,
+  
+  -- Output pane configuration
+  output_pane = {
+    width = 0.6,  -- 60% of editor width
+    height = 0.6, -- 60% of editor height
+    border = 'rounded',
+  },
+  
   -- Open inspector window on request
   auto_open_inspector = false,
   
@@ -47,6 +57,7 @@ M.defaults = {
     run_all = "<leader>sra",
     toggle_inspector = "<leader>si",
     toggle_log = "<leader>sl",
+    toggle_output = "<leader>so",
     clear_state = "<leader>sc",
     new_code_block = "<leader>sn",
     new_markdown_block = "<leader>sm",
@@ -63,7 +74,7 @@ M.defaults = {
   -- Highlight groups
   highlights = {
     SandmanSignEmpty = { fg = "#6b7280" },
-    SandmanSignRunning = { fg = "#3b82f6" },
+    SandmanSignRunning = { fg = "#f59e0b" },
     SandmanSignExecuted = { fg = "#10b981" },
     SandmanSignErrored = { fg = "#ef4444" },
     SandmanVirtualText = { fg = "#6b7280", italic = true },

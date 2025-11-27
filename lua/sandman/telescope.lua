@@ -10,7 +10,7 @@ local pickers = require('telescope.pickers')
 local finders = require('telescope.finders')
 local conf = require('telescope.config').values
 local actions = require('telescope.actions')
-local action_state = require('telescope.action_state')
+local action_state = require('telescope.actions.state')
 local previewers = require('telescope.previewers')
 
 local storage = require('sandman.storage')
@@ -87,10 +87,17 @@ function M.pick_block(opts)
 
   local bufnr = vim.api.nvim_get_current_buf()
   local parser = require('sandman.parser')
-  local blocks = parser.parse_blocks(bufnr)
+  local all_blocks = parser.parse_blocks(bufnr)
+
+  local blocks = {}
+  for _, block in ipairs(all_blocks) do
+    if block.type == 'lua' then
+      table.insert(blocks, block)
+    end
+  end
 
   if #blocks == 0 then
-    vim.notify('No code blocks found', vim.log.levels.WARN)
+    vim.notify('No lua code blocks found', vim.log.levels.WARN)
     return
   end
 
@@ -99,9 +106,10 @@ function M.pick_block(opts)
     finder = finders.new_table({
       results = blocks,
       entry_maker = function(entry)
-        local lang = entry.lang or 'unknown'
-        local lines = #entry.content
-        local display = string.format('[%s] Lines %d-%d (%d lines)', lang, entry.start_line, entry.end_line, lines)
+        local lang = entry.type or 'unknown'
+        local lines = vim.split(entry.code, '\n', { plain = true })
+        local line_count = #lines
+        local display = string.format('[%s] Lines %d-%d (%d lines)', lang, entry.start_line, entry.end_line, line_count)
         return {
           value = entry,
           display = display,
@@ -114,8 +122,9 @@ function M.pick_block(opts)
     previewer = previewers.new_buffer_previewer({
       title = 'Block Preview',
       define_preview = function(self, entry)
-        vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, entry.value.content)
-        vim.api.nvim_buf_set_option(self.state.bufnr, 'filetype', entry.value.lang or 'text')
+        local lines = vim.split(entry.value.code, '\n', { plain = true })
+        vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+        vim.api.nvim_buf_set_option(self.state.bufnr, 'filetype', entry.value.type or 'text')
       end,
     }),
     attach_mappings = function(prompt_bufnr, map)
@@ -130,8 +139,8 @@ function M.pick_block(opts)
       map('i', '<C-e>', function()
         local selection = action_state.get_selected_entry()
         local sandman = require('sandman')
-        -- Find block index
-        for i, block in ipairs(blocks) do
+        -- Find block index in all blocks
+        for i, block in ipairs(all_blocks) do
           if block.start_line == selection.value.start_line then
             sandman.run_block(bufnr, i)
             break
@@ -149,14 +158,20 @@ function M.pick_requests(opts)
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  if path == '' then
+    vim.notify('No file associated with buffer', vim.log.levels.WARN)
+    return
+  end
+
   local executor = require('sandman.executor')
-  local state = executor.get_state(bufnr)
+  local state = executor.get_state(path)
 
   local requests = {}
-  for block_idx, block_state in ipairs(state.blocks) do
-    for _, req in ipairs(block_state.requests) do
+  for block_id, block_requests in pairs(state.requests) do
+    for _, req in ipairs(block_requests) do
       table.insert(requests, {
-        block_idx = block_idx,
+        block_id = block_id,
         request = req,
       })
     end
@@ -173,7 +188,7 @@ function M.pick_requests(opts)
       results = requests,
       entry_maker = function(entry)
         local req = entry.request
-        local display = string.format('[Block %d] %s %s - %d', entry.block_idx, req.method, req.url, req.status or 0)
+        local display = string.format('[Block %d] %s %s - %d', entry.block_id, req.method, req.url, req.response.status or 0)
         return {
           value = entry,
           display = display,
@@ -232,7 +247,7 @@ function M.pick_requests(opts)
         local selection = action_state.get_selected_entry()
         -- Open inspector at this request
         local ui = require('sandman.ui')
-        ui.show_inspector(bufnr, selection.value.block_idx)
+        ui.show_inspector(bufnr, selection.value.block_id)
       end)
 
       return true
