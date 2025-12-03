@@ -158,12 +158,9 @@ M.jwt = {
 }
 
 -- Environment variable helper
-M.getenv = function(key)
+M.getenv = function(key, env_vars)
   -- Check if key starts with SANDMAN_ prefix for security
-  if not key:match("^SANDMAN_") then
-    error("Environment variable must start with SANDMAN_ prefix for security")
-  end
-  return os.getenv(key)
+  return env_vars[key] or nil
 end
 
 -- Table deep copy

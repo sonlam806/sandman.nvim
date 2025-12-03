@@ -251,7 +251,10 @@ local function create_sandman_api(state, block_id)
         base64 = utils.base64,
         uri = utils.uri,
         jwt = utils.jwt,
-        getenv = utils.getenv,
+        getenv = function(key)
+            local env = utils.getenv(key, state.env)
+            return env
+        end,
 
         document = {
             set = function(key, value)

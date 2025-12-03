@@ -183,7 +183,7 @@ function M.load_env(notebook_path)
       if key and value then
         -- Remove quotes if present
         value = value:gsub('^["\'](.*)["\'"]$', '%1')
-        env['SANDMAN_' .. key] = value
+        env[key] = value
       end
     end
   end
