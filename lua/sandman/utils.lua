@@ -4,11 +4,11 @@ local M = {}
 -- JSON encode/decode
 M.json = {
   encode = function(data)
-    return vim.fn.json_encode(data)
+    return vim.json.encode(data)
   end,
   
   decode = function(str)
-    local ok, result = pcall(vim.fn.json_decode, str)
+    local ok, result = pcall(vim.json.decode, str)
     if ok then
       return result
     else
