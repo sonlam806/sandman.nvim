@@ -79,7 +79,7 @@ function M.show_inspector(bufnr, block_id)
 	if not M.inspector_win or not vim.api.nvim_win_is_valid(M.inspector_win) then
 		local opts = config.get()
 		M.inspector_win, M.inspector_buf =
-			create_split(" Sandman Inspector ", opts.inspector_position or "right", opts.inspector_size or 60)
+			create_split(" Sandman Inspector ", opts.inspector_position or "right", opts.inspector_size or 100)
 
 		-- Set up keybind to close with Shift-Q
 		vim.api.nvim_buf_set_keymap(M.inspector_buf, "n", "Q", "", {
@@ -124,7 +124,7 @@ function M.toggle_inspector(state)
 	else
 		local opts = config.get()
 		M.inspector_win, M.inspector_buf =
-			create_split(" Sandman Inspector ", opts.inspector_position or "right", opts.inspector_size or 60)
+			create_split(" Sandman Inspector ", opts.inspector_position or "right", opts.inspector_size or 100)
 
 		-- Set up keybind to close with Shift-Q
 		vim.api.nvim_buf_set_keymap(M.inspector_buf, "n", "Q", "", {
@@ -199,8 +199,20 @@ function M.render_inspector(state, focus_block_id)
 				if req.body and req.body ~= "" then
 					table.insert(lines, "**Request Body:**")
 					table.insert(lines, "```json")
-					for line in req.body:gmatch("[^\r\n]+") do
-						table.insert(lines, line)
+					if type(req.body) == "table" then
+						local ok, encoded = pcall(vim.json.encode, req.body, { indent = "  "})
+						-- table.insert(lines, vim.json.encode(req.body, { indent = "  "}))
+						if ok then
+							for line in encoded:gmatch("[^\r\n]+") do
+								table.insert(lines, line)
+							end
+						else
+							table.insert(lines, "-- Failed to encode body as JSON --")
+						end
+					else 
+						for line in req.body:gmatch("[^\r\n]+") do
+							table.insert(lines, line)
+						end
 					end
 					table.insert(lines, "```")
 					table.insert(lines, "")
@@ -221,8 +233,17 @@ function M.render_inspector(state, focus_block_id)
 					if req.response.body then
 						table.insert(lines, "**Response Body:**")
 						table.insert(lines, "```json")
-						for line in req.response.body:gmatch("[^\r\n]+") do
-							table.insert(lines, line)
+						-- Try to decode as JSON first
+						local ok, decoded = pcall(vim.json.decode, req.response.body)
+						if ok and type(decoded) == "table" then
+							local pretty = vim.json.encode(decoded, { indent = "  " })
+							for line in pretty:gmatch("[^\r\n]+") do
+								table.insert(lines, line)
+							end
+						else
+							for line in req.response.body:gmatch("[^\r\n]+") do
+								table.insert(lines, line)
+							end
 						end
 						table.insert(lines, "```")
 						table.insert(lines, "")
@@ -254,6 +275,32 @@ function M.toggle_log(state)
 	else
 		local opts = config.get()
 		M.log_win, M.log_buf = create_split("Sandman Log", opts.log_position, opts.log_size)
+		-- Set up keybind to close with Shift-Q
+		vim.api.nvim_buf_set_keymap(M.log_buf, "n", "Q", "", {
+			noremap = true,
+			silent = true,
+			callback = function()
+				if M.log_win and vim.api.nvim_win_is_valid(M.log_win) then
+					vim.api.nvim_win_close(M.log_win, true)
+					M.log_win = nil
+					M.log_buf = nil
+				end
+			end,
+		})
+
+		-- Also allow 'q' to close
+		vim.api.nvim_buf_set_keymap(M.log_buf, "n", "q", "", {
+			noremap = true,
+			silent = true,
+			callback = function()
+				if M.log_win and vim.api.nvim_win_is_valid(M.log_win) then
+					vim.api.nvim_win_close(M.log_win, true)
+					M.log_win = nil
+					M.log_buf = nil
+				end
+			end,
+		})
+
 		M.render_log(state)
 	end
 end

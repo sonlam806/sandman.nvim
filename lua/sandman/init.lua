@@ -210,7 +210,8 @@ function M.run_block(bufnr, block_index)
 
     -- Auto-open output pane if configured (only if inspector is not open)
     if M.config.options.auto_open_output and not (M.ui.inspector_win and vim.api.nvim_win_is_valid(M.ui.inspector_win)) then
-        M.ui.show_output(state, block.id, block)
+        M.ui.toggle_inspector(state)
+        -- M.ui.show_output(state, block.id, block)
     end
 end
 
@@ -359,19 +360,22 @@ function M.update_ui(bufnr)
     end
 
     -- Update inspector if it's open
-    if M.ui.inspector_win and vim.api.nvim_win_is_valid(M.ui.inspector_win) then
-        M.ui.render_inspector(state)
-    end
+    M.ui.render_inspector(state)
+    -- Update log window if it's open
+    M.ui.render_log(state)
+    -- if M.ui.inspector_win and vim.api.nvim_win_is_valid(M.ui.inspector_win) then
+    --     M.ui.render_inspector(state)
+    -- end
 
     -- Update output pane if it's open for one of these blocks
-    if M.ui.output_win and vim.api.nvim_win_is_valid(M.ui.output_win) and M.ui.current_output_block_id then
-        for _, block in ipairs(blocks) do
-            if block.id == M.ui.current_output_block_id then
-                M.ui.render_output(state, M.ui.current_output_block_id, block)
-                break
-            end
-        end
-    end
+    -- if M.ui.output_win and vim.api.nvim_win_is_valid(M.ui.output_win) and M.ui.current_output_block_id then
+    --     for _, block in ipairs(blocks) do
+    --         if block.id == M.ui.current_output_block_id then
+    --             M.ui.render_output(state, M.ui.current_output_block_id, block)
+    --             break
+    --         end
+    --     end
+    -- end
 end
 
 -- Start HTTP server for current buffer
