@@ -115,8 +115,9 @@ function M.open_notebook(name_or_path)
     return nil, 'Notebook not found: ' .. path
   end
   
-  -- Open in current buffer
-  vim.cmd('edit ' .. vim.fn.fnameescape(path))
+  -- Open in new tab
+  vim.cmd('tabnew ' .. vim.fn.fnameescape(path))
+  vim.cmd('file Sandman')
   
   return path
 end
