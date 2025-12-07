@@ -629,7 +629,6 @@ function M.render_output(state, block_id, block)
 					table.insert(lines, "**Response Body:**")
 					table.insert(lines, "```json")
 					if type(req.response.body) == "table" then
-						print(vim.inspect(vim.json.encode(req.response.body, { indent = "  " })))
 						table.insert(lines, vim.json.encode(req.response.body, { indent = "  " }))
 					elseif type(req.response.body) == "string" then
 						-- Try decode as JSON first

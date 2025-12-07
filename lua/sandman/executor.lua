@@ -334,7 +334,6 @@ http.patch(url, headers, body, function(res)
 				timestamp = os.time(),
 				block_id = block_id,
 			})
-			print(msg)
 		end,
 	}
 
