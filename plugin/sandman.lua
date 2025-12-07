@@ -148,3 +148,9 @@ vim.api.nvim_create_user_command("SandmanPickRequests", function()
 end, {
     desc = "Pick from request history",
 })
+
+vim.api.nvim_create_user_command("SandmanEnv", function()
+    require("sandman").open_env()
+end, {
+    desc = "Open .env file for current notebook",
+})

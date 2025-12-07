@@ -530,4 +530,15 @@ function M.export_state(bufnr)
     end
 end
 
+function M.open_env(bufnr)
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
+    local path = vim.api.nvim_buf_get_name(bufnr)
+    if path == "" then
+        vim.notify("No file associated with buffer", vim.log.levels.WARN)
+        return
+    end
+    
+    M.storage.open_env(path)
+end
+
 return M

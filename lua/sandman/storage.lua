@@ -117,7 +117,6 @@ function M.open_notebook(name_or_path)
   
   -- Open in new tab
   vim.cmd('tabnew ' .. vim.fn.fnameescape(path))
-  vim.cmd('file Sandman')
   
   return path
 end
@@ -231,6 +230,27 @@ function M.copy_notebook(name_or_path, new_name)
   vim.fn.writefile(lines, dst_path)
   
   return dst_path
+end
+
+function M.open_env(notebook_path)
+  local env_file = M.get_env_file(notebook_path)
+  
+  if vim.fn.filereadable(env_file) == 0 then
+    local confirm = vim.fn.confirm('No .env file found. Create one?', '&Yes\n&No', 1)
+    if confirm ~= 1 then
+      return
+    end
+    
+    local template = [[# Environment variables for ]] .. vim.fn.fnamemodify(notebook_path, ':t:r') .. [[
+
+    # Example:
+    # API_KEY=your-secret-key
+    # API_URL=https://api.example.com
+    ]]
+    vim.fn.writefile(vim.split(template, '\n'), env_file)
+  end
+  
+  vim.cmd('split ' .. vim.fn.fnameescape(env_file))
 end
 
 return M
