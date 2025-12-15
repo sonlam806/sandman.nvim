@@ -16,15 +16,15 @@ local function create_sandman_api(state, block_id)
 				local error_msg = nil
 				local done = false
 
-http.get(url, headers, function(res)
-						if res.error then
-							error_msg = res.message
-							-- Log the error request
-							table.insert(state.logs, {
-								message = string.format('[GET] %s - error: %s', url, tostring(res.message)),
-								timestamp = os.time(),
-								block_id = block_id,
-							})
+				http.get(url, headers, function(res)
+					if res.error then
+						error_msg = res.message
+						-- Log the error request
+						table.insert(state.logs, {
+							message = string.format("[GET] %s - error: %s", url, tostring(res.message)),
+							timestamp = os.time(),
+							block_id = block_id,
+						})
 					else
 						response = res
 						-- Record the request
@@ -38,7 +38,11 @@ http.get(url, headers, function(res)
 						})
 						-- Log the request automatically
 						table.insert(state.logs, {
-							message = string.format('[GET] %s - status: %s', url, tostring(res and res.status or 'unknown')),
+							message = string.format(
+								"[GET] %s - status: %s",
+								url,
+								tostring(res and res.status or "unknown")
+							),
 							timestamp = os.time(),
 							block_id = block_id,
 						})
@@ -65,15 +69,15 @@ http.get(url, headers, function(res)
 				local error_msg = nil
 				local done = false
 
-http.post(url, headers, body, function(res)
-						if res.error then
-							error_msg = res.message
-							-- Log the error request
-							table.insert(state.logs, {
-								message = string.format('[POST] %s - error: %s', url, tostring(res.message)),
-								timestamp = os.time(),
-								block_id = block_id,
-							})
+				http.post(url, headers, body, function(res)
+					if res.error then
+						error_msg = res.message
+						-- Log the error request
+						table.insert(state.logs, {
+							message = string.format("[POST] %s - error: %s", url, tostring(res.message)),
+							timestamp = os.time(),
+							block_id = block_id,
+						})
 					else
 						response = res
 						table.insert(state.requests[block_id], {
@@ -86,7 +90,11 @@ http.post(url, headers, body, function(res)
 						})
 						-- Log the request automatically
 						table.insert(state.logs, {
-							message = string.format('[POST] %s - status: %s', url, tostring(res and res.status or 'unknown')),
+							message = string.format(
+								"[POST] %s - status: %s",
+								url,
+								tostring(res and res.status or "unknown")
+							),
 							timestamp = os.time(),
 							block_id = block_id,
 						})
@@ -113,15 +121,15 @@ http.post(url, headers, body, function(res)
 				local error_msg = nil
 				local done = false
 
-http.put(url, headers, body, function(res)
-						if res.error then
-							error_msg = res.message
-							-- Log the error request
-							table.insert(state.logs, {
-								message = string.format('[PUT] %s - error: %s', url, tostring(res.message)),
-								timestamp = os.time(),
-								block_id = block_id,
-							})
+				http.put(url, headers, body, function(res)
+					if res.error then
+						error_msg = res.message
+						-- Log the error request
+						table.insert(state.logs, {
+							message = string.format("[PUT] %s - error: %s", url, tostring(res.message)),
+							timestamp = os.time(),
+							block_id = block_id,
+						})
 					else
 						response = res
 						table.insert(state.requests[block_id], {
@@ -134,7 +142,11 @@ http.put(url, headers, body, function(res)
 						})
 						-- Log the request automatically
 						table.insert(state.logs, {
-							message = string.format('[PUT] %s - status: %s', url, tostring(res and res.status or 'unknown')),
+							message = string.format(
+								"[PUT] %s - status: %s",
+								url,
+								tostring(res and res.status or "unknown")
+							),
 							timestamp = os.time(),
 							block_id = block_id,
 						})
@@ -161,15 +173,15 @@ http.put(url, headers, body, function(res)
 				local error_msg = nil
 				local done = false
 
-http.delete(url, headers, function(res)
-						if res.error then
-							error_msg = res.message
-							-- Log the error request
-							table.insert(state.logs, {
-								message = string.format('[DELETE] %s - error: %s', url, tostring(res.message)),
-								timestamp = os.time(),
-								block_id = block_id,
-							})
+				http.delete(url, headers, function(res)
+					if res.error then
+						error_msg = res.message
+						-- Log the error request
+						table.insert(state.logs, {
+							message = string.format("[DELETE] %s - error: %s", url, tostring(res.message)),
+							timestamp = os.time(),
+							block_id = block_id,
+						})
 					else
 						response = res
 						table.insert(state.requests[block_id], {
@@ -182,7 +194,11 @@ http.delete(url, headers, function(res)
 						})
 						-- Log the request automatically
 						table.insert(state.logs, {
-							message = string.format('[DELETE] %s - status: %s', url, tostring(res and res.status or 'unknown')),
+							message = string.format(
+								"[DELETE] %s - status: %s",
+								url,
+								tostring(res and res.status or "unknown")
+							),
 							timestamp = os.time(),
 							block_id = block_id,
 						})
@@ -209,15 +225,15 @@ http.delete(url, headers, function(res)
 				local error_msg = nil
 				local done = false
 
-http.patch(url, headers, body, function(res)
-						if res.error then
-							error_msg = res.message
-							-- Log the error request
-							table.insert(state.logs, {
-								message = string.format('[PATCH] %s - error: %s', url, tostring(res.message)),
-								timestamp = os.time(),
-								block_id = block_id,
-							})
+				http.patch(url, headers, body, function(res)
+					if res.error then
+						error_msg = res.message
+						-- Log the error request
+						table.insert(state.logs, {
+							message = string.format("[PATCH] %s - error: %s", url, tostring(res.message)),
+							timestamp = os.time(),
+							block_id = block_id,
+						})
 					else
 						response = res
 						table.insert(state.requests[block_id], {
@@ -230,7 +246,11 @@ http.patch(url, headers, body, function(res)
 						})
 						-- Log the request automatically
 						table.insert(state.logs, {
-							message = string.format('[PATCH] %s - status: %s', url, tostring(res and res.status or 'unknown')),
+							message = string.format(
+								"[PATCH] %s - status: %s",
+								url,
+								tostring(res and res.status or "unknown")
+							),
 							timestamp = os.time(),
 							block_id = block_id,
 						})
